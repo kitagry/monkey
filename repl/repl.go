@@ -2,11 +2,10 @@ package repl
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 
 	"github.com/kitagry/monkey/lexer"
-	"github.com/kitagry/monkey/token"
+	"github.com/kitagry/monkey/parser"
 )
 
 const PROMPT = ">> "
@@ -25,10 +24,22 @@ func Start(in io.Reader, out io.Writer) {
 
 		line := scanner.Text()
 		l := lexer.New(line)
+		p := parser.New(l)
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			w.Write([]byte(fmt.Sprintf("%+v\n", tok)))
+		program := p.ParseProgram()
+		if len(p.Errors()) != 0 {
+			printParserErrors(w, p.Errors())
+			continue
 		}
+
+		w.WriteString(program.String() + "\n")
 		w.Flush()
 	}
+}
+
+func printParserErrors(w *bufio.Writer, errors []string) {
+	for _, msg := range errors {
+		w.WriteString(msg + "\n")
+	}
+	w.Flush()
 }
