@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 
+	"github.com/kitagry/monkey/evaluator"
 	"github.com/kitagry/monkey/lexer"
 	"github.com/kitagry/monkey/parser"
 )
@@ -32,8 +33,11 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		w.WriteString(program.String() + "\n")
-		w.Flush()
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			w.WriteString(evaluated.Inspect() + "\n")
+			w.Flush()
+		}
 	}
 }
 
