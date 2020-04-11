@@ -6,6 +6,7 @@ import (
 
 	"github.com/kitagry/monkey/evaluator"
 	"github.com/kitagry/monkey/lexer"
+	"github.com/kitagry/monkey/object"
 	"github.com/kitagry/monkey/parser"
 )
 
@@ -14,6 +15,7 @@ const PROMPT = ">> "
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	w := bufio.NewWriter(out)
+	env := object.NewEnvironment()
 
 	for {
 		w.Write([]byte(PROMPT))
@@ -33,7 +35,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			w.WriteString(evaluated.Inspect() + "\n")
 			w.Flush()
