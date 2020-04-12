@@ -43,6 +43,8 @@ const (
 
 	EQ     = "=="
 	NOT_EQ = "!="
+
+	MACRO = "MACRO"
 )
 
 type Token struct {
@@ -58,6 +60,7 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"true":   TRUE,
 	"false":  FALSE,
+	"macro":  MACRO,
 }
 
 func LookupIdent(ident string) TokenType {
