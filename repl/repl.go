@@ -3,6 +3,7 @@ package repl
 import (
 	"bufio"
 	"io"
+	"strings"
 
 	"github.com/kitagry/monkey/evaluator"
 	"github.com/kitagry/monkey/lexer"
@@ -10,7 +11,10 @@ import (
 	"github.com/kitagry/monkey/parser"
 )
 
-const PROMPT = ">> "
+const (
+	PROMPT         = ">> "
+	HALFWAY_PROMPT = ".. "
+)
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -20,13 +24,26 @@ func Start(in io.Reader, out io.Writer) {
 	for {
 		w.Write([]byte(PROMPT))
 		w.Flush()
-		scanned := scanner.Scan()
-		if !scanned {
-			return
+
+		var text string
+		for {
+			scanned := scanner.Scan()
+			if !scanned {
+				return
+			}
+			text += scanner.Text()
+			text = strings.TrimSpace(text)
+			if strings.Count(text, "(") == strings.Count(text, ")") &&
+				strings.Count(text, "[") == strings.Count(text, "]") &&
+				strings.Count(text, "{") == strings.Count(text, "}") &&
+				strings.HasSuffix(text, ";") {
+				break
+			}
+			w.Write([]byte(HALFWAY_PROMPT))
+			w.Flush()
 		}
 
-		line := scanner.Text()
-		l := lexer.New(line)
+		l := lexer.New(text)
 		p := parser.New(l)
 
 		program := p.ParseProgram()

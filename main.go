@@ -1,19 +1,36 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"os/user"
 
 	"github.com/kitagry/monkey/repl"
 )
 
 func main() {
-	user, err := user.Current()
-	if err != nil {
-		panic(err)
+	flag.Parse()
+	args := flag.Args()
+
+	switch len(args) {
+	case 0:
+		repl.Start(os.Stdin, os.Stdout)
+	case 1:
+		file, err := os.Open(os.Args[1])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, `"%s" doesn't found`, os.Args[1])
+			os.Exit(1)
+		}
+		defer file.Close()
+
+		n := nullWriter{}
+		repl.Start(file, &n)
 	}
-	fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
-	fmt.Println("Feel free to type in commands")
-	repl.Start(os.Stdin, os.Stdout)
+}
+
+type nullWriter struct {
+}
+
+func (nw *nullWriter) Write(p []byte) (n int, err error) {
+	return
 }
