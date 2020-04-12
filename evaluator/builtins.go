@@ -1,6 +1,10 @@
 package evaluator
 
-import "github.com/kitagry/monkey/object"
+import (
+	"fmt"
+
+	"github.com/kitagry/monkey/object"
+)
 
 var builtins = map[string]*object.Builtin{
 	"len": {
@@ -65,7 +69,7 @@ var builtins = map[string]*object.Builtin{
 
 			length := len(array.Elements)
 			if length > 0 {
-				newElements := make([]object.Object, length-1, length-1)
+				newElements := make([]object.Object, length-1)
 				copy(newElements, array.Elements[1:length])
 				return &object.Array{Elements: newElements}
 			}
@@ -84,11 +88,19 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			length := len(array.Elements)
-			newElements := make([]object.Object, length+1, length+1)
+			newElements := make([]object.Object, length+1)
 			copy(newElements, array.Elements)
 			newElements[length] = args[1]
 
 			return &object.Array{Elements: newElements}
+		},
+	},
+	"puts": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return NULL
 		},
 	},
 }
