@@ -147,9 +147,11 @@ type Error struct {
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 
-func (e *Error) Inspect() string { return "ERROR: " + e.Message }
+func (e *Error) Inspect() string {
+	return fmt.Sprintf("ERROR: %s", e.Message)
+}
 
-func (e *Error) String() string { return fmt.Sprintf("Error{%s}", e.Message) }
+func (e *Error) String() string { return e.Inspect() }
 
 type Builtin struct {
 	Fn BuiltinFunction

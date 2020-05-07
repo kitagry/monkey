@@ -14,7 +14,7 @@ func main() {
 
 	switch len(args) {
 	case 0:
-		repl.Start(os.Stdin, os.Stdout)
+		repl.Start(os.Stdin, os.Stdout, os.Stderr)
 	case 1:
 		file, err := os.Open(os.Args[1])
 		if err != nil {
@@ -24,7 +24,7 @@ func main() {
 		defer file.Close()
 
 		n := nullWriter{}
-		repl.Start(file, &n)
+		repl.Start(file, &n, os.Stderr)
 	}
 }
 
