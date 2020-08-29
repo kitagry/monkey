@@ -50,6 +50,8 @@ const (
 type Token struct {
 	Type    TokenType
 	Literal string
+	Row     int
+	Col     int
 }
 
 var keywords = map[string]TokenType{

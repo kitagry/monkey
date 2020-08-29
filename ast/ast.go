@@ -10,6 +10,8 @@ import (
 type Node interface {
 	TokenLiteral() string
 	String() string
+	Row() int
+	Col() int
 }
 
 type Statement interface {
@@ -43,6 +45,20 @@ func (p *Program) TokenLiteral() string {
 	return ""
 }
 
+func (p *Program) Row() int {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].Row()
+	}
+	return 0
+}
+
+func (p *Program) Col() int {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].Col()
+	}
+	return 0
+}
+
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
@@ -68,6 +84,10 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
+func (ls *LetStatement) Row() int { return ls.Token.Row }
+
+func (ls *LetStatement) Col() int { return ls.Token.Col }
+
 type Identifier struct {
 	Token token.Token
 	Value string
@@ -78,6 +98,10 @@ func (i *Identifier) expressionNode() {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 
 func (i *Identifier) String() string { return i.Value }
+
+func (i *Identifier) Row() int { return i.Token.Row }
+
+func (i *Identifier) Col() int { return i.Token.Col }
 
 type ReturnStatement struct {
 	Token       token.Token
@@ -102,6 +126,10 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
+func (rs *ReturnStatement) Row() int { return rs.Token.Row }
+
+func (rs *ReturnStatement) Col() int { return rs.Token.Col }
+
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
@@ -118,6 +146,10 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+func (es *ExpressionStatement) Row() int { return es.Token.Row }
+
+func (es *ExpressionStatement) Col() int { return es.Token.Col }
+
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -128,6 +160,10 @@ func (il *IntegerLiteral) expressionNode() {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 
 func (il *IntegerLiteral) String() string { return il.Token.Literal }
+
+func (il *IntegerLiteral) Row() int { return il.Token.Row }
+
+func (il *IntegerLiteral) Col() int { return il.Token.Col }
 
 type PrefixExpression struct {
 	Token    token.Token
@@ -150,6 +186,10 @@ func (pe *PrefixExpression) String() string {
 	return out.String()
 }
 
+func (pe *PrefixExpression) Row() int { return pe.Token.Row }
+
+func (pe *PrefixExpression) Col() int { return pe.Token.Col }
+
 type InfixExpression struct {
 	Token    token.Token
 	Left     Expression
@@ -157,21 +197,25 @@ type InfixExpression struct {
 	Right    Expression
 }
 
-func (oe *InfixExpression) expressionNode() {}
+func (ie *InfixExpression) expressionNode() {}
 
-func (oe *InfixExpression) TokenLiteral() string { return oe.Token.Literal }
+func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
 
-func (oe *InfixExpression) String() string {
+func (ie *InfixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
-	out.WriteString(oe.Left.String())
-	out.WriteString(" " + oe.Operator + " ")
-	out.WriteString(oe.Right.String())
+	out.WriteString(ie.Left.String())
+	out.WriteString(" " + ie.Operator + " ")
+	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 
 	return out.String()
 }
+
+func (ie *InfixExpression) Row() int { return ie.Token.Row }
+
+func (ie *InfixExpression) Col() int { return ie.Token.Col }
 
 type Boolean struct {
 	Token token.Token
@@ -183,6 +227,10 @@ func (b *Boolean) expressionNode() {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 
 func (b *Boolean) String() string { return b.Token.Literal }
+
+func (b *Boolean) Row() int { return b.Token.Row }
+
+func (b *Boolean) Col() int { return b.Token.Col }
 
 type IfExpression struct {
 	Token       token.Token
@@ -209,6 +257,10 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+func (ie *IfExpression) Row() int { return ie.Token.Row }
+
+func (ie *IfExpression) Col() int { return ie.Token.Col }
+
 type BlockStatement struct {
 	Token      token.Token
 	Statements []Statement
@@ -226,6 +278,10 @@ func (bs *BlockStatement) String() string {
 	}
 	return out.String()
 }
+
+func (bs *BlockStatement) Row() int { return bs.Token.Row }
+
+func (bs *BlockStatement) Col() int { return bs.Token.Col }
 
 type FunctionLiteral struct {
 	Token      token.Token
@@ -254,6 +310,10 @@ func (fl *FunctionLiteral) String() string {
 	return out.String()
 }
 
+func (fl *FunctionLiteral) Row() int { return fl.Token.Row }
+
+func (fl *FunctionLiteral) Col() int { return fl.Token.Col }
+
 type CallExpression struct {
 	Token     token.Token
 	Function  Expression
@@ -280,6 +340,10 @@ func (ce *CallExpression) String() string {
 	return out.String()
 }
 
+func (ce *CallExpression) Row() int { return ce.Token.Row }
+
+func (ce *CallExpression) Col() int { return ce.Token.Col }
+
 type StringLiteral struct {
 	Token token.Token
 	Value string
@@ -290,6 +354,10 @@ func (sl *StringLiteral) expressionNode() {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 
 func (sl *StringLiteral) String() string { return sl.Token.Literal }
+
+func (sl *StringLiteral) Row() int { return sl.Token.Row }
+
+func (sl *StringLiteral) Col() int { return sl.Token.Col }
 
 type ArrayLiteral struct {
 	Token    token.Token
@@ -314,6 +382,10 @@ func (al *ArrayLiteral) String() string {
 	return out.String()
 }
 
+func (al *ArrayLiteral) Row() int { return al.Token.Row }
+
+func (al *ArrayLiteral) Col() int { return al.Token.Col }
+
 type IndexExpression struct {
 	Token token.Token
 	Left  Expression
@@ -334,6 +406,10 @@ func (ie *IndexExpression) String() string {
 	out.WriteString("])")
 	return out.String()
 }
+
+func (ie *IndexExpression) Row() int { return ie.Token.Row }
+
+func (ie *IndexExpression) Col() int { return ie.Token.Col }
 
 type HashLiteral struct {
 	Token token.Token
@@ -357,6 +433,10 @@ func (hl *HashLiteral) String() string {
 	out.WriteString("}")
 	return out.String()
 }
+
+func (hl *HashLiteral) Row() int { return hl.Token.Row }
+
+func (hl *HashLiteral) Col() int { return hl.Token.Col }
 
 type MacroLiteral struct {
 	Token      token.Token
@@ -383,3 +463,7 @@ func (ml *MacroLiteral) String() string {
 	out.WriteString(ml.Body.String())
 	return out.String()
 }
+
+func (ml *MacroLiteral) Row() int { return ml.Token.Row }
+
+func (ml *MacroLiteral) Col() int { return ml.Token.Col }

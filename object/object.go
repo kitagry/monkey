@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/kitagry/monkey/ast"
+	"github.com/kitagry/monkey/token"
 )
 
 type BuiltinFunction func(args ...Object) Object
@@ -143,13 +144,16 @@ func (f *Function) String() string { return f.Inspect() }
 
 type Error struct {
 	Message string
+	Token   *token.Token
 }
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 
-func (e *Error) Inspect() string { return "ERROR: " + e.Message }
+func (e *Error) Inspect() string {
+	return fmt.Sprintf("ERROR: %s", e.Message)
+}
 
-func (e *Error) String() string { return fmt.Sprintf("Error{%s}", e.Message) }
+func (e *Error) String() string { return e.Inspect() }
 
 type Builtin struct {
 	Fn BuiltinFunction

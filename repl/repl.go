@@ -16,7 +16,7 @@ const (
 	HALFWAY_PROMPT = ".. "
 )
 
-func Start(in io.Reader, out io.Writer) {
+func Start(in io.Reader, out io.Writer, er io.Writer) {
 	scanner := bufio.NewScanner(in)
 	w := bufio.NewWriter(out)
 	env := object.NewEnvironment()
@@ -48,7 +48,7 @@ func Start(in io.Reader, out io.Writer) {
 		p := parser.New(l)
 		program := p.ParseProgram()
 		if len(p.Errors()) != 0 {
-			printParserErrors(w, p.Errors())
+			printParserErrors(er, p.Errors())
 			continue
 		}
 
@@ -63,9 +63,8 @@ func Start(in io.Reader, out io.Writer) {
 	}
 }
 
-func printParserErrors(w *bufio.Writer, errors []string) {
+func printParserErrors(w io.Writer, errors []error) {
 	for _, msg := range errors {
-		w.WriteString(msg + "\n")
+		w.Write([]byte(msg.Error() + "\n"))
 	}
-	w.Flush()
 }
